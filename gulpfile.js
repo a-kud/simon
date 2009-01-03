@@ -6,16 +6,12 @@ var gulp = require('gulp'),
     autoprefixer = require('gulp-autoprefixer'),
     cssnano = require('gulp-cssnano'),
     eslint = require('gulp-eslint'),
-    uglify = require('gulp-uglify'),
     minify = require('gulp-minify'),
-    jsmin = require('gulp-jsmin'),
     rename = require('gulp-rename'),
-    concat = require('gulp-concat'),
     notify = require('gulp-notify'), // Notify of changes
     livereload = require('gulp-livereload'),
     del = require('del'), // Delete files for a clean build
     server = require('gulp-server-livereload'),
-    pump = require('pump'),
     browserify = require('browserify'),
     source = require('vinyl-source-stream'),
     buffer = require('vinyl-buffer'),
@@ -79,7 +75,7 @@ gulp.task('clean', function() {
 });
 
 gulp.task('default', ['clean'], function() {
-    gulp.start('styles', 'scripts', 'fonts', 'views', 'watch');
+    gulp.start('styles', 'scripts', 'lint', 'fonts', 'views', 'watch');
 });
 
 gulp.task('watch', function() {
