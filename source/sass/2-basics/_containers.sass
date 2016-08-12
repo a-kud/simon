@@ -1,0 +1,52 @@
+.container
+    display: flex
+    width: 636px
+    height: 636px
+    border-radius: 50%
+    border: 18px solid black
+    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.85), 0 0 50px rgba(0, 0, 0, 0.7) inset
+    overflow: hidden
+    flex-flow: row wrap
+    position: absolute
+
+.controls-wrapper-outer
+    dislay: flex
+    flex-flow: column nowrap
+    justify-content: center
+    width: 300px
+    height: 300px
+    border: 10px solid black
+    position: absolute
+    left: 150px
+    top: 150px
+    z-index: 1
+    border-radius: 50%
+    overflow: hidden
+    background-color: snow
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.7)
+    h1
+        text-align: center
+
+.controls-wrapper-inner
+    display: flex
+    flex-flow: row nowrap
+    justify-content: space-between
+    padding: 5px 50px
+
+.digital-display
+    display: flex
+    flex-flow: column nowrap
+    & > h4
+        text-align: center
+        margin: 5px auto
+
+
+.digital-display-screen
+    width: 70px
+    height: 70px
+    background: plum
+    border-radius: 20%
+
+.flip-switch-container
+    display: flex
+    justify-content: center
