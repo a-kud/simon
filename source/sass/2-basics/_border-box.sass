@@ -1,5 +1,8 @@
+=box-sizing($box-model)
+    box-sizing: $box-model
+
 html
-  box-sizing: border-box
+    +box-sizing(border-box)
 
 *, *:before, *:after
-  box-sizing: inherit
+    +box-sizing(inherit)
