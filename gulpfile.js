@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
-    jade = require('gulp-jade'),
+    //jade = require('gulp-jade'),
+    pug = require('gulp-pug'),
     sass = require('gulp-ruby-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     cssnano = require('gulp-cssnano'),
@@ -9,11 +10,18 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'), // Notify of changes
     livereload = require('gulp-livereload'),
-    del = require('del'); // Clean files for a clean build
+    del = require('del'), // Clean files for a clean build
+    server = require('gulp-server-livereload');
 
-gulp.task('templates', function() {
-    return gulp.src('source/views/**/*.jade')
-        .pipe( jade() )
+// gulp.task('templates', function() {
+//     return gulp.src('source/views/**/*.jade')
+//         .pipe( jade() )
+//         .pipe(gulp.dest('build'))
+// })
+
+gulp.task('views', function() {
+    return gulp.src('source/views/**/*.{jade,pug}')
+        .pipe( pug() )
         .pipe(gulp.dest('build'))
 })
 
@@ -51,13 +59,22 @@ gulp.task('clean', function() {
 });
 
 gulp.task('default', ['clean'], function() {
-    gulp.start('styles', 'scripts', 'templates');
+    gulp.start('styles', 'scripts', 'views', 'watch');
+});
+
+gulp.task('server', function(){
+    gulp.src('build')
+        .pipe(server({
+            livereload: true,
+            directoryListing: {eanable: true, path: 'build'},
+            open: true
+        }));
 });
 
 gulp.task('watch', function() {
   gulp.watch('source/sass/**/*.sass', ['styles']);
   gulp.watch('source/assets/js/**/*.js', ['scripts']);
-  gulp.watch('source/views/**/*.jade', ['templates']);
+  gulp.watch('source/views/**/*.{jade,pug}', ['views']);
   livereload.listen();
   gulp.watch(['build/**']).on('change', livereload.changed);
 });
