@@ -1,0 +1,18 @@
+.btn-circle
+	width: $btn-circle-width
+	height: $btn-circle-height
+	border-radius: 50%
+	+border-all(0.1rem solid $white)
+	align-self: center
+	box-shadow: 0 0.38em 0 $gray
+	transition: all 0.05s
+
+.btn-circle:active
+	box-shadow: 0 0.25em 0 $gray
+	transform: translate(0, 0.2em)
+
+.btn-circle:focus
+	outline: none
+
+button
+	outline: 0

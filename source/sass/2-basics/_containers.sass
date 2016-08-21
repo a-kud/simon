@@ -1,52 +1,50 @@
+.container, .controls-wrapper-outer, .controls-wrapper-inner, .digital-display,
+.flip-switch-container, .controls-wrapper-btns, .start-btn-wrapper,
+.strict-btn-wrapper
+    +flexbox
+
 .container
-    display: flex
-    width: 636px
-    height: 636px
+    +flex-flow($flex-wrap: wrap)
+    +size(39.75rem)
     border-radius: 50%
-    border: 18px solid black
-    box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.85), 0 0 50px rgba(0, 0, 0, 0.7) inset
+    +border-all(1.125rem solid black)
+    box-shadow: $container-shadow
+    //+box-shadow()
     overflow: hidden
-    flex-flow: row wrap
     position: relative
 
 .controls-wrapper-outer
-    dislay: flex
-    flex-flow: column nowrap
+    +flex-flow(column nowrap)
     justify-content: center
-    width: 300px
-    height: 300px
+    +size(18.75rem)
     border: 10px solid black
     position: absolute
-    left: 150px
-    top: 150px
+    left: 9.375rem
+    top: 9.375rem
     z-index: 1
     border-radius: 50%
     overflow: hidden
     background-color: $silver
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.7)
+    box-shadow: 0 0 3.125rem rgba(0, 0, 0, 0.7)
     h1
         text-align: center
 
 .controls-wrapper-inner
-    display: flex
-    flex-flow: row nowrap
+    +flex-flow()
     justify-content: space-between
-    padding: 5px 50px
+    padding: 0.313rem 3.125rem
 
 .digital-display
-    display: flex
-    flex-flow: column nowrap
+    +flex-flow($flex-dir: column)
     & > h4
         text-align: center
-        margin: 5px auto
-
-
-.digital-display-screen
-    width: 70px
-    height: 70px
-    background: plum
-    border-radius: 20%
+        margin: 0.313rem auto
 
 .flip-switch-container
-    display: flex
     justify-content: center
+
+.controls-wrapper-btns
+    +flex-flow
+
+.start-btn-wrapper, .strict-btn-wrapper
+    +flex-flow($flex-dir: column)
