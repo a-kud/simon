@@ -2,7 +2,8 @@
 
 let startBtn = document.querySelector("#start"),
     strictBtn = document.querySelector("#strict"),
-    sw = document.querySelector(".switch");
+    sw = document.querySelector(".switch"),
+    rnd = document.querySelector("#round");
 
 let colorButtons = {
     0: "red",
@@ -18,91 +19,138 @@ let colorButtons = {
     };
 
 let gameStarted = false,
-    round = 2;
+    round = 3;
 
 sw.addEventListener("click", function swtichToggled() {
-    console.log("on/off switch pressed")
     init();
 });
-function handler() {
-    activateButtons();
-}
+
 function addCtrlBtnsListeners() {
-    startBtn.addEventListener( "click", handler );
-    strictBtn.addEventListener( "click", handler );
+    startBtn.addEventListener( "click", playRound );
+    strictBtn.addEventListener( "click", playRound );
 }
 
 function rmCtrlBtnsListeners() {
-    startBtn.removeEventListener( "click", handler );
-    strictBtn.removeEventListener( "click", handler );
+    startBtn.removeEventListener( "click", playRound );
+    strictBtn.removeEventListener( "click", playRound );
 }
 
+/*function userClicks(e) {
+    function getKeyByValue(object, value) {
+        return Object.keys(object).find(key => object[key] === value);
+    }
 
+    for(let i=0; i<=sequence.length; i++) {
+        console.log( getKeyByValue(colorButtons, e.target.classList[0]) == sequence[i] )
+    }
+    // console.log(e.target.classList);
+}*/
+
+function addColorBtnsLstnrs(seq) {
+
+    function userClicks(e) {
+        function getKeyByValue(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+
+        for(let i=0; i<=sequence.length; i++) {
+            console.log( getKeyByValue(colorButtons, e.target.classList[0]) == sequence[i] )
+        }
+        // console.log(e.target.classList);
+    }
+
+    let colorBtns = document.querySelectorAll(".color-btn");
+    let sequence = seq;
+    console.log(sequence)
+    colorBtns.forEach( (btn) => btn.addEventListener("click", userClicks) );
+
+}
+
+/**
+ * Initiates game start/stop
+ */
 function init() {
     if (!gameStarted) {
         gameStarted = true;
+        rnd.textContent = "00";
         addCtrlBtnsListeners();
     } else {
         gameStarted = false;
         resetRound();
+        rnd.textContent = "";
         rmCtrlBtnsListeners();
     }
 
 }
 
-function activateButtons() {
-    /*1. toggle activated class
-    2. play corresponding sound for button*/
-    generateButtonSequence().then( (arr) => {
+/**
+ * Lights up color buttons in random order
+ */
+function playRound() {
 
+    let sequence = generateSequence(round);
+    console.log(
+        sequence.map((num) => colorButtons[num])
+    )
+
+    function computerTurn(arr) {
         let promises = [];
-        //
-        // for (let num of arr) {
-        //     promises.push(function() {
-        //         lightBtn(colorButtons[num]);
-        //         return playSound(audioButtons[num]).then( () => { offBtnLight(colorButtons[num]); });
-        //     });
-        //     console.log("Current sequence: ", colorButtons[num])
-        // }
-        //
+
         arr.forEach( (num) => {
             promises.push(function() {
-                    lightBtn(colorButtons[num]);
-                    return playSound(audioButtons[num]).then( () => { offBtnLight(colorButtons[num]); });
+                    return playSound(audioButtons[num], num)
+                                .then( () => {
+                                    return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[num])));
+                                });
+
                 });
-            console.log("Current sequence: ", colorButtons[num])
         });
+
         return promises;
+    }
 
+    /*
+        Add event listeners to color buttons
+        If event.target code equals corresponding one in sequence proceed or,
+        in other case show computerTurn again
+        Play button sound
+        If all buttons are pressed increment round
+        Remove event listeners to color buttons
+        Run computerTurn
+    */
+    function userTurn(sequence) {
+        addColorBtnsLstnrs(sequence);
+    }
 
-    }).then( (promises) => {
-
+    function executePromisesSeq(promises) {
         let  result = Promise.resolve();
+
         promises.forEach(function (prom) {
             result = result.then(prom);
+        });
 
-            });
         return result;
-    });
-}
+    }
 
-function waitForUserTurn() {
+    let computerPromises = computerTurn(sequence);
+
+    executePromisesSeq(computerPromises).then(() => { userTurn(sequence); });
 
 }
 
 /**
- * Changes backround of color button to idicate activated item
+ * Changes backround of color button to idicate activated button
+ * @param {String} btn - Class name
  */
-function toggleBtnLight(btn) {
-    let element = document.querySelector("." + btn)
-    element.classList.toggle("activated-" + btn);
-}
-
 function lightBtn(btn) {
     let element = document.querySelector("." + btn)
     element.classList.add("activated-" + btn);
 }
 
+/**
+ * Changes backround of color button to idicate deactivated button
+ * @param {String} btn - Class name
+ */
 function offBtnLight(btn) {
     let element = document.querySelector("." + btn)
     element.classList.remove("activated-" + btn);
@@ -111,27 +159,23 @@ function offBtnLight(btn) {
 /** Plays specified audiofile
  * @param {String} path - Path to the file
  */
-function playSound(path) {
-    return new Promise(function playPromise(resolve, reject) {
+function playSound(path, num) {
+    return new Promise(function (resolve, reject) {
         let audio = new Audio(path);
+        lightBtn(colorButtons[num]);
+        audio.load();
         audio.play();
         audio.onended = resolve;
         audio.onerror = reject;
     })
 }
 /**
- * Returns an array of color button as integers
- * @returns {ArrayBuffer} buttonsToLight
+ * @param {Number} round - Nonnegative integer
+ * @returns {Array} - Array of pseudorandom nonnegative integers
  */
-function generateButtonSequence() {
-
-    let buttonsToLight = [];
-
-	for (let i = 0; i <= round; i += 1) {
-		buttonsToLight.push( getRandomInt(0, 4) );
-	}
-    return Promise.resolve(buttonsToLight);
-}
+ function generateSequence(round) {
+     return createArray(round).map(() => getRandomInt(0, 4));
+ }
 
 /**
  * Returns current round number.
@@ -158,8 +202,16 @@ function resetRound() {
 
 // Helper functions
 /**
+ * @param {Number} length - positive integer
+ * @returns {Array}
+ */
+ function createArray(length) {
+     return [...new Array(length)];
+ }
+
+/**
  * Returns a random number between 0 (inclusive) and 1 (exclusive)
- * @returns {Number} Float number
+ * @returns {Number} - Float number
  */
 function getRandom() {
     return Math.random();
@@ -174,3 +226,16 @@ function getRandom() {
 function getRandomInt(min, max) {
     return Math.floor( (getRandom() * max - min) ) + min;
 }
+
+/** Sets a pause in milliseconds.
+ * @param {Number} duration - Time in ms
+ */
+function sleep(duration)
+	{
+	return(
+		new Promise(function(resolve, reject)
+			{
+			setTimeout(function() { resolve(); }, duration);
+			})
+		);
+	}
