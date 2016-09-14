@@ -1,7 +1,16 @@
 .lcd
     +size(5rem, 4.688rem)
+    +flexbox
+    justify-content: center
+    align-items: center
     border-radius: 0.625rem
-    border: 0.125rem solid black
+    border: $lcd-border solid black
+    margin-right: 2rem
+    p
+        font-size: 3em
+        font-family: $lcd-font
+        color: $orange
+        margin: 0
 
 .lcd-off
     background: #430710

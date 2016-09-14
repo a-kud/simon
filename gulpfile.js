@@ -11,13 +11,8 @@ var gulp = require('gulp'),
     notify = require('gulp-notify'), // Notify of changes
     livereload = require('gulp-livereload'),
     del = require('del'), // Clean files for a clean build
-    server = require('gulp-server-livereload');
-
-// gulp.task('templates', function() {
-//     return gulp.src('source/views/**/*.jade')
-//         .pipe( jade() )
-//         .pipe(gulp.dest('build'))
-// })
+    server = require('gulp-server-livereload'),
+    pump = require('pump');
 
 gulp.task('views', function() {
     return gulp.src('source/views/**/*.{jade,pug}')
@@ -35,40 +30,41 @@ gulp.task('styles', function() {
         .pipe(notify({message: 'Styles task done.'}))
 })
 
-gulp.task('scripts', function() {
-    return gulp.src(['source/assets/js/**/*.js', '!node_modules/**'])
-        // eslint() attaches the lint output to the "eslint" property
-        // of the file object so it can be used by other modules.
-        .pipe(eslint())
-        // eslint.format() outputs the lint results to the console.
-        // Alternatively use eslint.formatEach() (see Docs).
-        .pipe(eslint.format())
-        // To have the process exit with an error code (1) on
-        // lint error, return the stream and pipe to failAfterError last.
-        .pipe(eslint.failAfterError())
-        .pipe(concat('main.js'))
-        .pipe(gulp.dest('build/assets/js'))
-        .pipe(rename({suffix: '.min'}))
-        //.pipe(uglify())
-        .pipe(gulp.dest('build/assets/js'))
-        .pipe(notify({ message: 'Scripts task complete' }));
+gulp.task('fonts', function() {
+    return gulp.src(['source/assets/fonts/*'])
+            .pipe(gulp.dest('build/assets/fonts/'));
+})
+
+gulp.task('scripts', function(cb) {
+    function createErrorHandler(name) {
+        return function (err) {
+          console.error('Error from ' + name + ' in compress task', err.toString());
+        };
+      }
+
+    pump([
+        gulp.src(['source/assets/js/**/*.js', '!node_modules/**']),
+        eslint(),
+        eslint.format(),
+        concat('main.js'),
+        gulp.dest('build/assets/js'),
+        rename({suffix: '.min'}),
+        // uglify(),
+        gulp.dest('build/assets/js'),
+        notify({ message: 'Scripts task complete' })
+    ], cb);
 })
 
 gulp.task('clean', function() {
-    return del(['build']);
+    return del(['build/**',
+                            '!build',
+                            '!build/assets',
+                            '!build/assets/sound/**',
+                            '!build/assets/fonts']);
 });
 
 gulp.task('default', ['clean'], function() {
-    gulp.start('styles', 'scripts', 'views', 'watch');
-});
-
-gulp.task('server', function(){
-    gulp.src('build')
-        .pipe(server({
-            livereload: true,
-            directoryListing: {eanable: true, path: 'build'},
-            open: true
-        }));
+    gulp.start('styles', 'scripts', 'fonts', 'views', 'watch');
 });
 
 gulp.task('watch', function() {

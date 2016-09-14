@@ -9,7 +9,6 @@
     border-radius: 50%
     +border-all(1.125rem solid black)
     box-shadow: $container-shadow
-    //+box-shadow()
     overflow: hidden
     position: relative
 
@@ -31,7 +30,7 @@
 
 .controls-wrapper-inner
     +flex-flow()
-    justify-content: space-between
+    justify-content: center
     padding: 0.313rem 3.125rem
 
 .lcd-wrapper
@@ -45,6 +44,9 @@
 
 .controls-wrapper-btns
     +flex-flow
+
+.start-btn-wrapper
+    margin-right: 1rem
 
 .start-btn-wrapper, .strict-btn-wrapper
     +flex-flow($flex-dir: column)

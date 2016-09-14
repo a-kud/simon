@@ -21,7 +21,8 @@
     "gulp-rename": "^1.2.2",
     "gulp-ruby-sass": "^2.0.6",
     "gulp-server-livereload": "^1.8.2",
-    "gulp-uglify": "^1.5.4"
+    "gulp-uglify": "^1.5.4",
+    "pump": "^1.0.1"
   },
   "eslintConfig": {
     "parserOptions": {
@@ -33,7 +34,8 @@
     "extends": "eslint:recommended",
     "rules": {
       "curly": "warn",
-      "no-console": "off"
+      "no-console": "off",
+      "no-undef": "warn"
     }
   }
 }
