@@ -35,37 +35,6 @@ function rmCtrlBtnsListeners() {
     strictBtn.removeEventListener( "click", playRound );
 }
 
-/*function userClicks(e) {
-    function getKeyByValue(object, value) {
-        return Object.keys(object).find(key => object[key] === value);
-    }
-
-    for(let i=0; i<=sequence.length; i++) {
-        console.log( getKeyByValue(colorButtons, e.target.classList[0]) == sequence[i] )
-    }
-    // console.log(e.target.classList);
-}*/
-
-function addColorBtnsLstnrs(seq) {
-
-    function userClicks(e) {
-        function getKeyByValue(object, value) {
-            return Object.keys(object).find(key => object[key] === value);
-        }
-
-        for(let i=0; i<=sequence.length; i++) {
-            console.log( getKeyByValue(colorButtons, e.target.classList[0]) == sequence[i] )
-        }
-        // console.log(e.target.classList);
-    }
-
-    let colorBtns = document.querySelectorAll(".color-btn");
-    let sequence = seq;
-    console.log(sequence)
-    colorBtns.forEach( (btn) => btn.addEventListener("click", userClicks) );
-
-}
-
 /**
  * Initiates game start/stop
  */
@@ -93,6 +62,9 @@ function playRound() {
         sequence.map((num) => colorButtons[num])
     )
 
+    /**
+     * @returns {Array.<Object>} - Array of functions to be executed
+     */
     function computerTurn(arr) {
         let promises = [];
 
@@ -109,6 +81,30 @@ function playRound() {
         return promises;
     }
 
+    function userTurn() {
+        let count = -1;
+        function userClicks(e) {
+
+            function clickCount() {
+                let sequenceCopy = [...sequence];
+                count += 1;
+                return count;
+            };
+
+            let choiseCondition = (sequence[clickCount()] == getKeyByValue(colorButtons, e.target.classList[0]));
+
+            console.log(choiseCondition)
+            if (!choiseCondition) {
+                colorBtns.forEach( (btn) => btn.removeEventListener("click", userClicks) );
+                executePromisesSeq(computerPromises).then(() => { userTurn(); });            }
+        }
+
+        let colorBtns = document.querySelectorAll(".color-btn");
+
+        colorBtns.forEach( (btn) => btn.addEventListener("click", userClicks) );
+
+    }
+
     /*
         Add event listeners to color buttons
         If event.target code equals corresponding one in sequence proceed or,
@@ -118,23 +114,11 @@ function playRound() {
         Remove event listeners to color buttons
         Run computerTurn
     */
-    function userTurn(sequence) {
-        addColorBtnsLstnrs(sequence);
-    }
 
-    function executePromisesSeq(promises) {
-        let  result = Promise.resolve();
-
-        promises.forEach(function (prom) {
-            result = result.then(prom);
-        });
-
-        return result;
-    }
 
     let computerPromises = computerTurn(sequence);
 
-    executePromisesSeq(computerPromises).then(() => { userTurn(sequence); });
+    executePromisesSeq(computerPromises).then(() => { userTurn(); });
 
 }
 
@@ -156,7 +140,8 @@ function offBtnLight(btn) {
     element.classList.remove("activated-" + btn);
 }
 
-/** Plays specified audiofile
+/**
+ * Plays specified audiofile
  * @param {String} path - Path to the file
  */
 function playSound(path, num) {
@@ -202,6 +187,7 @@ function resetRound() {
 
 // Helper functions
 /**
+ * Creates empty array if specified length
  * @param {Number} length - positive integer
  * @returns {Array}
  */
@@ -227,8 +213,9 @@ function getRandomInt(min, max) {
     return Math.floor( (getRandom() * max - min) ) + min;
 }
 
-/** Sets a pause in milliseconds.
+/** Sets a pause.
  * @param {Number} duration - Time in ms
+ * @returns {Object} Promise that resolves after specified time
  */
 function sleep(duration)
 	{
@@ -239,3 +226,29 @@ function sleep(duration)
 			})
 		);
 	}
+
+/**
+ * Returns the first key that has specified value
+ * @param {Object} object
+ * @param value
+ * @returns {String|undefined} First key with specified value or undefined if
+ * no key found
+ */
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
+
+/**
+ * Executes promises sequentially
+ * @param {Array.<Object>} - Array of Promise returning functions.
+ * @returns {Object} - Executing promise.
+ */
+function executePromisesSeq(promises) {
+    let  result = Promise.resolve();
+
+    promises.forEach(function (prom) {
+        result = result.then(prom);
+    });
+
+    return result;
+}
