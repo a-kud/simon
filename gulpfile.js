@@ -1,18 +1,27 @@
+"use strict";
+
 var gulp = require('gulp'),
-    //jade = require('gulp-jade'),
     pug = require('gulp-pug'),
     sass = require('gulp-ruby-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     cssnano = require('gulp-cssnano'),
     eslint = require('gulp-eslint'),
     uglify = require('gulp-uglify'),
+    minify = require('gulp-minify'),
+    jsmin = require('gulp-jsmin'),
     rename = require('gulp-rename'),
     concat = require('gulp-concat'),
     notify = require('gulp-notify'), // Notify of changes
     livereload = require('gulp-livereload'),
-    del = require('del'), // Clean files for a clean build
+    del = require('del'), // Delete files for a clean build
     server = require('gulp-server-livereload'),
-    pump = require('pump');
+    pump = require('pump'),
+    browserify = require('browserify'),
+    source = require('vinyl-source-stream'),
+    buffer = require('vinyl-buffer'),
+    sourcemaps = require('gulp-sourcemaps'),
+    gutil = require('gulp-util'),
+    babelify = require('babelify');
 
 gulp.task('views', function() {
     return gulp.src('source/views/**/*.{jade,pug}')
@@ -35,25 +44,25 @@ gulp.task('fonts', function() {
             .pipe(gulp.dest('build/assets/fonts/'));
 })
 
-gulp.task('scripts', function(cb) {
-    function createErrorHandler(name) {
-        return function (err) {
-          console.error('Error from ' + name + ' in compress task', err.toString());
-        };
-      }
+gulp.task('scripts', function() {
 
-    pump([
-        gulp.src(['source/assets/js/**/*.js', '!node_modules/**']),
-        eslint(),
-        eslint.format(),
-        concat('main.js'),
-        gulp.dest('build/assets/js'),
-        rename({suffix: '.min'}),
-        // uglify(),
-        gulp.dest('build/assets/js'),
-        notify({ message: 'Scripts task complete' })
-    ], cb);
-})
+    var b = browserify({
+        entries: 'source/assets/js/app/simon.js',
+        debug: true
+    });
+
+    return b.transform("babelify", { presets: ["es2015"] })
+        .bundle()
+        .pipe(source('main.js'))
+        .pipe(buffer())
+        .pipe(sourcemaps.init({loadMaps: true}))
+            // Add transformation tasks to the pipeline here.
+            .pipe(minify())
+            .on('error', gutil.log)
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('build/assets/js'));
+
+});
 
 gulp.task('clean', function() {
     return del(['build/**',

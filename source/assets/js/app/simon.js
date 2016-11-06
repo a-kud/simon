@@ -1,4 +1,5 @@
-// use strict;
+//"use strict";
+let padStart = require('pad-start');
 
 let startBtn = document.querySelector("#start"),
     strictBtn = document.querySelector("#strict"),
@@ -18,36 +19,110 @@ let colorButtons = {
         3: "assets/sound/simonSound4.mp3"
     };
 
-let gameStarted = false,
-    round = 3;
+let settings = function() {
+    let round = 1,
+        gameOn = false,
+        gameStarted = false,
+        strict = false;
 
+	function getRound() {
+		return round;
+	}
+
+    function getStatus() {
+        // return gameOn;
+        return {on: gameOn, started: gameStarted, strict: strict};
+    }
+
+    // function isStarted() {
+    //     return gameStarted;
+    // }
+
+    function toggleStatus() {
+        if (!gameOn) {
+            gameOn = true;
+        } else {
+            gameOn = false;
+        }
+    }
+
+    function gameInProgress() {
+        gameStarted = true;
+    }
+
+    function gameEnded() {
+        gameStarted = false;
+    }
+
+	function resetRoundAndSequence() {
+		round = 1;
+        sequence = undefined;
+	}
+
+	function incrementRound() {
+		round += 1;
+	}
+
+	return {
+		round: getRound,
+		reset: resetRoundAndSequence,
+		incrementR: incrementRound,
+        gameStatus: getStatus,
+        onoff: toggleStatus,
+        startGame: gameInProgress,
+        endGame: gameEnded
+	};
+}();
+
+let sequence; /*= generateSequence(settings.round())*/;
+let startB = false;
 sw.addEventListener("click", function swtichToggled() {
     init();
 });
 
-function addCtrlBtnsListeners() {
-    startBtn.addEventListener( "click", playRound );
-    strictBtn.addEventListener( "click", playRound );
-}
+// function addCtrlBtnsListeners() {
+//     startBtn.addEventListener( "click", playRound);
+//     strictBtn.addEventListener( "click", playRound);
+// }
 
-function rmCtrlBtnsListeners() {
-    startBtn.removeEventListener( "click", playRound );
-    strictBtn.removeEventListener( "click", playRound );
-}
+// function rmCtrlBtnsListeners() {
+//     startBtn.removeEventListener( "click", playRound );
+//     strictBtn.removeEventListener( "click", playRound );
+// }
 
 /**
  * Initiates game start/stop
  */
 function init() {
-    if (!gameStarted) {
-        gameStarted = true;
-        rnd.textContent = "00";
-        addCtrlBtnsListeners();
+    if ( !settings.gameStatus().on ) {
+        /*if (settings.gameStatus().started) {
+            rmCtrlBtnsListeners()
+            sequence = generateSequence();
+            computerPromises = computerTurn(sequence);
+        }*/
+        settings.onoff();
+        // rnd.textContent = padStart( settings.round(), 2, "0" );
+        setText(rnd, "ON");
+        // addCtrlBtnsListeners();
+        startBtn.addEventListener( "click", playRound);
+        strictBtn.addEventListener( "click", playRound);
+        sequence = generateSequence(settings.round())
     } else {
-        gameStarted = false;
-        resetRound();
-        rnd.textContent = "";
-        rmCtrlBtnsListeners();
+        //gameStarted = false;
+        // if (settings.gameStatus().started) {
+        //     // rmCtrlBtnsListeners()
+        //     console.log("foo")
+        // }
+        //console.log(settings.gameStatus())
+        settings.onoff();
+        settings.endGame();
+        settings.reset();
+        setText(rnd, "");
+        // rnd.textContent = "";
+        // rmCtrlBtnsListeners();
+        startBtn.removeEventListener( "click", playRound );
+        strictBtn.removeEventListener( "click", playRound );
+        //document.querySelectorAll(".color-btn").forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
 
 }
@@ -55,12 +130,7 @@ function init() {
 /**
  * Lights up color buttons in random order
  */
-function playRound() {
-
-    let sequence = generateSequence(round);
-    console.log(
-        sequence.map((num) => colorButtons[num])
-    )
+function playRound(e) {
 
     /**
      * @returns {Array.<Object>} - Array of functions to be executed
@@ -80,45 +150,132 @@ function playRound() {
 
         return promises;
     }
+    // function userClicks() {
+    //     console.log("sequence in userClicks: ", sequence)
+    //     function clickCount() {
+    //         count += 1;
+    //         return count;
+    //     };
+    //
+    //     clickCount();
+    //
+    //     let btnClicked = getKeyByValue(colorButtons, e.target.classList[0]),
+    //         soundUrl = audioButtons[btnClicked];
+    //     console.log("btnClicked: ", btnClicked)
+    //     console.log("count is ", count)
+    //     let choise = (sequence[count] == btnClicked);
+    //
+    //     let setRound = () => { setText(rnd, padStart( settings.round(), 2, "0" )); }
+    //     console.log("choise before conditionals is: ", choise);
+    //     if (!choise) {
+    //         setText(rnd, "ER");
+    //         count = -1;
+    //         correctChoise = 0;
+    //         playSound(soundUrl, btnClicked)
+    //             .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
+    //             .then( () => { executePromisesSeq(computerPromises);})
+    //             .then( () => { setRound(); } );
+    //     }
+    //     else if(choise) {
+    //         correctChoise += 1;
+    //         playSound(soundUrl, btnClicked)
+    //             .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
+    //     }
+    //     if (correctChoise == settings.round()) {
+    //         settings.incrementR();
+    //         // setRound();
+    //         correctChoise = 0;
+    //         // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
+    //         // console.log(sequence)
+    //         sequence.push(getRandomInt(0, 4))
+    //         computerPromises = computerTurn(sequence);
+    //         sleep(1500).then( () => { setRound(); /*playRound();*/ } )
+    //             .then( () => { executePromisesSeq(computerPromises);
+    //                 [...colorBtns].forEach( (btn) => { /*console.log("remove userClicks");*/ btn.removeEventListener("click", userClicks); } );
+    //              } )
+    //             .then( () => { userTurn(userClicks); } );
+    //     }
+    //     console.log("count after conditionals is: ", count);
+    //     //[...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
+    // }
+    function userClicks(e) {
+        console.log("sequence in userClicks: ", sequence);
 
-    function userTurn() {
-        let count = -1;
-        function userClicks(e) {
+        function clickCount() {
+            count += 1;
+            return count;
+        };
 
-            function clickCount() {
-                let sequenceCopy = [...sequence];
-                count += 1;
-                return count;
-            };
+        clickCount();
 
-            let choiseCondition = (sequence[clickCount()] == getKeyByValue(colorButtons, e.target.classList[0]));
+        let btnClicked = getKeyByValue(colorButtons, e.target.classList[0]),
+            soundUrl = audioButtons[btnClicked];
+        console.log("btnClicked: ", btnClicked)
+        console.log("count is ", count)
+        let choise = (sequence[count] == btnClicked);
 
-            console.log(choiseCondition)
-            if (!choiseCondition) {
-                colorBtns.forEach( (btn) => btn.removeEventListener("click", userClicks) );
-                executePromisesSeq(computerPromises).then(() => { userTurn(); });            }
+        let setRound = () => { setText(rnd, padStart( settings.round(), 2, "0" )); }
+        console.log("choise before conditionals is: ", choise);
+        // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
+        if (!choise) {
+            setText(rnd, "ER");
+            count = -1;
+            correctChoise = 0;
+            playSound(soundUrl, btnClicked)
+                .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
+                .then( () => { executePromisesSeq(computerPromises);})
+                .then( () => { setRound(); } );
         }
-
-        let colorBtns = document.querySelectorAll(".color-btn");
-
-        colorBtns.forEach( (btn) => btn.addEventListener("click", userClicks) );
-
+        else if(choise) {
+            correctChoise += 1;
+            playSound(soundUrl, btnClicked)
+                .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
+        }
+        if (correctChoise == settings.round()) {
+            settings.incrementR();
+            count = -1;
+            correctChoise = 0;
+            // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
+            // console.log(sequence)
+            sequence.push(getRandomInt(0, 4))
+            computerPromises = computerTurn(sequence);
+            sleep(1500).then( () => { setRound(); /*playRound();*/ } )
+                .then( () => { executePromisesSeq(computerPromises);
+                    // [...colorBtns].forEach( (btn) => { /*console.log("remove userClicks");*/ btn.removeEventListener("click", userClicks); } );
+                 } )
+                // .then( () => { [...colorBtns].forEach( (btn) => btn.addEventListener("click", userClicks)) } );
+        }
+        console.log("count after conditionals is: ", count);
+        // event.currentTarget.removeEventListener(event.type, userClicks);
+        // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
 
-    /*
-        Add event listeners to color buttons
-        If event.target code equals corresponding one in sequence proceed or,
-        in other case show computerTurn again
-        Play button sound
-        If all buttons are pressed increment round
-        Remove event listeners to color buttons
-        Run computerTurn
-    */
+    let count = -1;
+    let correctChoise = 0;
+
+    let computerPromises;
+
+    let colorBtns = document.querySelectorAll(".color-btn");
 
 
-    let computerPromises = computerTurn(sequence);
+    setText(rnd, padStart( settings.round(), 2, "0" ));
+    if ( !settings.gameStatus().started ) {
+        // settings.startGame();
+        computerPromises = computerTurn(sequence);
+    } else {
+        settings.reset();
+        setText(rnd, padStart( settings.round(), 2, "0" ));
+        sequence = generateSequence(settings.round());
+        computerPromises = computerTurn(sequence);
+    }
 
-    executePromisesSeq(computerPromises).then(() => { userTurn(); });
+    executePromisesSeq(computerPromises).then( () => {
+        [...colorBtns].forEach( (btn) => btn.addEventListener("click", userClicks) );
+    } );
+    // if (e) {
+    //     settings.endGame();
+    // }
+    [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
 
 }
 
@@ -141,7 +298,7 @@ function offBtnLight(btn) {
 }
 
 /**
- * Plays specified audiofile
+ * Plays specified audiofile and lights button
  * @param {String} path - Path to the file
  */
 function playSound(path, num) {
@@ -154,36 +311,20 @@ function playSound(path, num) {
         audio.onerror = reject;
     })
 }
+
+function animateStrict() {
+    let ledbox = document.querySelector(".led-box");
+
+}
+
+
 /**
- * @param {Number} round - Nonnegative integer
+ * @param {Number} n - Nonnegative integer
  * @returns {Array} - Array of pseudorandom nonnegative integers
  */
- function generateSequence(round) {
-     return createArray(round).map(() => getRandomInt(0, 4));
+ function generateSequence(n) {
+     return createArray(n).map(() => getRandomInt(0, 4));
  }
-
-/**
- * Returns current round number.
- * @returns {Number} - Round number
- */
-function getRound() {
-    return round;
-}
-
-/**
- * Increments round count as game progresses
- */
-function incrementRound() {
-    let currRound = getRound();
-    round = currRound + 1;
-}
-
-/**
- * Resets round to default
- */
-function resetRound() {
-    round = 0;
-}
 
 // Helper functions
 /**
@@ -251,4 +392,13 @@ function executePromisesSeq(promises) {
     });
 
     return result;
+}
+
+/**
+ * Sets the text content of a node and its descendants.
+ * @param {Object} element - DOM element object.
+ * @param {String} text - Content to be set.
+ */
+function setText(element, text) {
+    element.textContent = text;
 }
