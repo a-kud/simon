@@ -2,15 +2,19 @@
     +size(1rem)
     +border-all($led-border)
     border-radius: 50%
-    animation: blinkYellow 1s 1
+    // animation: blinkYellow 4s reverse
     align-self: center
     margin-bottom: $mrgn-btm
 
 @keyframes blinkYellow
     from
-        background-color: #ff0
+        background-color: $silver
     to
-        background-color: #AA0
+        background-color: $yellow
         box-shadow: $blink-yellow-shadow
-    // to
-    //     background-color: #ff0
+
+.led-box-on
+    animation: blinkYellow 3s forwards
+
+.led-box-off
+    animation: blinkYellow 3s reverse
