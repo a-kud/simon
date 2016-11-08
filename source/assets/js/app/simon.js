@@ -34,10 +34,6 @@ let settings = function() {
         return {on: gameOn, started: gameStarted, strict: strict};
     }
 
-    // function isStarted() {
-    //     return gameStarted;
-    // }
-
     function toggleStatus() {
         if (!gameOn) {
             gameOn = true;
@@ -122,7 +118,7 @@ function init() {
         // rmCtrlBtnsListeners();
         startBtn.removeEventListener( "click", playRound );
         strictBtn.removeEventListener( "click", playRound );
-        //document.querySelectorAll(".color-btn").forEach( (btn) => btn.removeEventListener("click", userClicks) );
+        cloneNodesAndReplace();
     }
 
 }
@@ -150,54 +146,10 @@ function playRound(e) {
 
         return promises;
     }
-    // function userClicks() {
-    //     console.log("sequence in userClicks: ", sequence)
-    //     function clickCount() {
-    //         count += 1;
-    //         return count;
-    //     };
-    //
-    //     clickCount();
-    //
-    //     let btnClicked = getKeyByValue(colorButtons, e.target.classList[0]),
-    //         soundUrl = audioButtons[btnClicked];
-    //     console.log("btnClicked: ", btnClicked)
-    //     console.log("count is ", count)
-    //     let choise = (sequence[count] == btnClicked);
-    //
-    //     let setRound = () => { setText(rnd, padStart( settings.round(), 2, "0" )); }
-    //     console.log("choise before conditionals is: ", choise);
-    //     if (!choise) {
-    //         setText(rnd, "ER");
-    //         count = -1;
-    //         correctChoise = 0;
-    //         playSound(soundUrl, btnClicked)
-    //             .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
-    //             .then( () => { executePromisesSeq(computerPromises);})
-    //             .then( () => { setRound(); } );
-    //     }
-    //     else if(choise) {
-    //         correctChoise += 1;
-    //         playSound(soundUrl, btnClicked)
-    //             .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
-    //     }
-    //     if (correctChoise == settings.round()) {
-    //         settings.incrementR();
-    //         // setRound();
-    //         correctChoise = 0;
-    //         // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
-    //         // console.log(sequence)
-    //         sequence.push(getRandomInt(0, 4))
-    //         computerPromises = computerTurn(sequence);
-    //         sleep(1500).then( () => { setRound(); /*playRound();*/ } )
-    //             .then( () => { executePromisesSeq(computerPromises);
-    //                 [...colorBtns].forEach( (btn) => { /*console.log("remove userClicks");*/ btn.removeEventListener("click", userClicks); } );
-    //              } )
-    //             .then( () => { userTurn(userClicks); } );
-    //     }
-    //     console.log("count after conditionals is: ", count);
-    //     //[...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
-    // }
+
+    /**
+     * Handles user's input while game's active.
+     */
     function userClicks(e) {
         console.log("sequence in userClicks: ", sequence);
 
@@ -255,10 +207,13 @@ function playRound(e) {
 
     let computerPromises;
 
-    let colorBtns = document.querySelectorAll(".color-btn");
+    let colorBtns = document.querySelectorAll(".color-btn"),
+        ledBox = document.querySelector(".led-box");
 
+    toggleClass(ledBox, "led-box-on");
 
     setText(rnd, padStart( settings.round(), 2, "0" ));
+
     if ( !settings.gameStatus().started ) {
         // settings.startGame();
         computerPromises = computerTurn(sequence);
@@ -267,16 +222,15 @@ function playRound(e) {
         setText(rnd, padStart( settings.round(), 2, "0" ));
         sequence = generateSequence(settings.round());
         computerPromises = computerTurn(sequence);
+        [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
 
     executePromisesSeq(computerPromises).then( () => {
-        [...colorBtns].forEach( (btn) => btn.addEventListener("click", userClicks) );
+        if (!settings.gameStatus().started) {
+            [...colorBtns].forEach( (btn) => btn.addEventListener("click", userClicks) );
+            settings.startGame();
+        }
     } );
-    // if (e) {
-    //     settings.endGame();
-    // }
-    [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
-
 }
 
 /**
@@ -401,4 +355,21 @@ function executePromisesSeq(promises) {
  */
 function setText(element, text) {
     element.textContent = text;
+}
+
+function cloneNodesAndReplace() {
+    let colorBtns = document.querySelectorAll(".color-btn");
+    let clones = [...colorBtns].map( (el) => el.cloneNode() );
+    [...colorBtns].forEach( (el, idx) => {
+        el.parentNode.replaceChild(clones[idx], el);
+    });
+}
+
+/**
+ * @param {String} classNames - Arbitrary number of class names.
+ * @param {Object} element - Object of document.
+ */
+function toggleClass(element, ...classNames) {
+    let classList = element.classList;
+    [...classNames].forEach( (el) => classList.toggle(el) );
 }
