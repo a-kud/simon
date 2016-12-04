@@ -30,7 +30,6 @@ let settings = function() {
 	}
 
     function getStatus() {
-        // return gameOn;
         return {on: gameOn, started: gameStarted, strict: strict};
     }
 
@@ -59,63 +58,43 @@ let settings = function() {
 		round += 1;
 	}
 
+    function toggleStrict() {
+        strict ? strict = false : strict = true
+    }
+
 	return {
 		round: getRound,
 		reset: resetRoundAndSequence,
 		incrementR: incrementRound,
         gameStatus: getStatus,
         onoff: toggleStatus,
+        strict: toggleStrict,
         startGame: gameInProgress,
         endGame: gameEnded
 	};
 }();
 
-let sequence; /*= generateSequence(settings.round())*/;
-let startB = false;
+let sequence;
+
 sw.addEventListener("click", function swtichToggled() {
     init();
 });
-
-// function addCtrlBtnsListeners() {
-//     startBtn.addEventListener( "click", playRound);
-//     strictBtn.addEventListener( "click", playRound);
-// }
-
-// function rmCtrlBtnsListeners() {
-//     startBtn.removeEventListener( "click", playRound );
-//     strictBtn.removeEventListener( "click", playRound );
-// }
 
 /**
  * Initiates game start/stop
  */
 function init() {
     if ( !settings.gameStatus().on ) {
-        /*if (settings.gameStatus().started) {
-            rmCtrlBtnsListeners()
-            sequence = generateSequence();
-            computerPromises = computerTurn(sequence);
-        }*/
         settings.onoff();
-        // rnd.textContent = padStart( settings.round(), 2, "0" );
         setText(rnd, "ON");
-        // addCtrlBtnsListeners();
         startBtn.addEventListener( "click", playRound);
         strictBtn.addEventListener( "click", playRound);
         sequence = generateSequence(settings.round())
     } else {
-        //gameStarted = false;
-        // if (settings.gameStatus().started) {
-        //     // rmCtrlBtnsListeners()
-        //     console.log("foo")
-        // }
-        //console.log(settings.gameStatus())
         settings.onoff();
         settings.endGame();
         settings.reset();
         setText(rnd, "");
-        // rnd.textContent = "";
-        // rmCtrlBtnsListeners();
         startBtn.removeEventListener( "click", playRound );
         strictBtn.removeEventListener( "click", playRound );
         cloneNodesAndReplace();
@@ -156,7 +135,7 @@ function playRound(e) {
         function clickCount() {
             count += 1;
             return count;
-        };
+        }
 
         clickCount();
 
@@ -168,11 +147,20 @@ function playRound(e) {
 
         let setRound = () => { setText(rnd, padStart( settings.round(), 2, "0" )); }
         console.log("choise before conditionals is: ", choise);
-        // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
         if (!choise) {
             setText(rnd, "ER");
             count = -1;
             correctChoise = 0;
+            if (settings.gameStatus().strict) {
+                console.log("error in strict");
+
+                settings.reset();
+                setText(rnd, padStart( settings.round(), 2, "0" ));
+                sequence = generateSequence(settings.round());
+                computerPromises = computerTurn(sequence);
+                // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );}
+
+            }
             playSound(soundUrl, btnClicked)
                 .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
                 .then( () => { executePromisesSeq(computerPromises);})
@@ -187,8 +175,6 @@ function playRound(e) {
             settings.incrementR();
             count = -1;
             correctChoise = 0;
-            // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
-            // console.log(sequence)
             sequence.push(getRandomInt(0, 4))
             computerPromises = computerTurn(sequence);
             sleep(1500).then( () => { setRound(); /*playRound();*/ } )
@@ -210,20 +196,37 @@ function playRound(e) {
     let colorBtns = document.querySelectorAll(".color-btn"),
         ledBox = document.querySelector(".led-box");
 
-    toggleClass(ledBox, "led-box-on");
-
     setText(rnd, padStart( settings.round(), 2, "0" ));
+    if (e.target.id == "strict") {
+        if (!settings.gameStatus().strict) {
+            settings.strict();
+            toggleClass(ledBox, "led-box-on");
+        }
+    } else {
+        if (settings.gameStatus().strict) {
+            settings.strict();
+            toggleClass(ledBox, "led-box-on");
+        }
+    }
 
     if ( !settings.gameStatus().started ) {
-        // settings.startGame();
+        // if (e.target.id == "strict") {
+        //     settings.strict();
+        //     toggleClass(ledBox, "led-box-on");
+        // }
         computerPromises = computerTurn(sequence);
     } else {
+        // if (e.target.id != "strict") {
+        //     settings.strict();
+        //     toggleClass(ledBox, "led-box-on");
+        // }
         settings.reset();
         setText(rnd, padStart( settings.round(), 2, "0" ));
         sequence = generateSequence(settings.round());
         computerPromises = computerTurn(sequence);
         [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
+
 
     executePromisesSeq(computerPromises).then( () => {
         if (!settings.gameStatus().started) {
@@ -265,11 +268,11 @@ function playSound(path, num) {
         audio.onerror = reject;
     })
 }
-
-function animateStrict() {
-    let ledbox = document.querySelector(".led-box");
-
-}
+//
+// function animateStrict() {
+//     let ledbox = document.querySelector(".led-box");
+//
+// }
 
 
 /**
@@ -315,7 +318,7 @@ function getRandomInt(min, max) {
 function sleep(duration)
 	{
 	return(
-		new Promise(function(resolve, reject)
+		new Promise(function(resolve)
 			{
 			setTimeout(function() { resolve(); }, duration);
 			})

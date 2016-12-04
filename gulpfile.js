@@ -64,12 +64,18 @@ gulp.task('scripts', function() {
 
 });
 
+gulp.task('lint', function() {
+    return gulp.src('source/assets/js/app/simon.js')
+        .pipe( eslint() )
+        .pipe( eslint.format() );
+});
+
 gulp.task('clean', function() {
     return del(['build/**',
                             '!build',
                             '!build/assets',
                             '!build/assets/sound/**',
-                            '!build/assets/fonts']);
+                            '!build/assets/fonts'])
 });
 
 gulp.task('default', ['clean'], function() {
