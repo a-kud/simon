@@ -178,14 +178,17 @@ function playRound(e) {
             sequence.push(getRandomInt(0, 4))
             computerPromises = computerTurn(sequence);
             sleep(1500).then( () => { setRound(); /*playRound();*/ } )
-                .then( () => { executePromisesSeq(computerPromises);
-                    // [...colorBtns].forEach( (btn) => { /*console.log("remove userClicks");*/ btn.removeEventListener("click", userClicks); } );
-                 } )
-                // .then( () => { [...colorBtns].forEach( (btn) => btn.addEventListener("click", userClicks)) } );
+                .then( () => { executePromisesSeq(computerPromises); } )
+        }
+        if (settings.round() == 4) {
+
+            alert("Lucky you! It's a win.");
+            settings.reset();
+            setText(rnd, padStart( settings.round(), 2, "0" ));
+            sequence = generateSequence(settings.round());
+            computerPromises = computerTurn(sequence);
         }
         console.log("count after conditionals is: ", count);
-        // event.currentTarget.removeEventListener(event.type, userClicks);
-        // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
 
     let count = -1;
@@ -226,7 +229,6 @@ function playRound(e) {
         computerPromises = computerTurn(sequence);
         [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );
     }
-
 
     executePromisesSeq(computerPromises).then( () => {
         if (!settings.gameStatus().started) {
