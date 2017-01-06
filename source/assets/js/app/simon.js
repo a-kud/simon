@@ -3,7 +3,8 @@ let padStart = require('pad-start');
 
 let startBtn = document.querySelector("#start"),
     strictBtn = document.querySelector("#strict"),
-    sw = document.querySelector(".switch"),
+    // sw = document.querySelector(".switch"),
+    sw = document.querySelector(".toggle--checkbox"),
     rnd = document.querySelector("#round");
 
 let colorButtons = {
@@ -127,7 +128,7 @@ function playRound(e) {
     }
 
     /**
-     * Handles user's input while game's active.
+     * Manages game according to user's input
      */
     function userClicks(e) {
         console.log("sequence in userClicks: ", sequence);
@@ -137,39 +138,44 @@ function playRound(e) {
             return count;
         }
 
+        function resetGame() {
+            settings.reset();
+            setText(rnd, padStart( settings.round(), 2, "0" ));
+            sequence = generateSequence(settings.round());
+            computerPromises = computerTurn(sequence);
+        }
+
         clickCount();
 
         let btnClicked = getKeyByValue(colorButtons, e.target.classList[0]),
             soundUrl = audioButtons[btnClicked];
-        console.log("btnClicked: ", btnClicked)
-        console.log("count is ", count)
         let choise = (sequence[count] == btnClicked);
+        let setRound = () => setText(rnd, padStart(settings.round(), 2, "0"));
 
-        let setRound = () => { setText(rnd, padStart( settings.round(), 2, "0" )); }
-        console.log("choise before conditionals is: ", choise);
         if (!choise) {
             setText(rnd, "ER");
             count = -1;
             correctChoise = 0;
             if (settings.gameStatus().strict) {
-                console.log("error in strict");
-
-                settings.reset();
+                /*settings.reset();
                 setText(rnd, padStart( settings.round(), 2, "0" ));
                 sequence = generateSequence(settings.round());
-                computerPromises = computerTurn(sequence);
-                // [...colorBtns].forEach( (btn) => btn.removeEventListener("click", userClicks) );}
-
+                computerPromises = computerTurn(sequence);*/
+                resetGame();
             }
             playSound(soundUrl, btnClicked)
-                .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
-                .then( () => { executePromisesSeq(computerPromises);})
-                .then( () => { setRound(); } );
+                .then( () => { return Promise.resolve(sleep(1000)
+                    .then(offBtnLight( colorButtons[btnClicked] )))
+                             })
+                .then( () => { executePromisesSeq( computerPromises); })
+                .then( () => { setRound(); });
         }
         else if(choise) {
             correctChoise += 1;
             playSound(soundUrl, btnClicked)
-                .then( () => { return Promise.resolve(sleep(1000).then(offBtnLight(colorButtons[btnClicked]))) } )
+                .then( () => { return Promise.resolve(sleep(1000)
+                    .then(offBtnLight(colorButtons[btnClicked])))
+                })
         }
         if (correctChoise == settings.round()) {
             settings.incrementR();
@@ -180,15 +186,15 @@ function playRound(e) {
             sleep(1500).then( () => { setRound(); /*playRound();*/ } )
                 .then( () => { executePromisesSeq(computerPromises); } )
         }
-        if (settings.round() == 4) {
+        if (settings.round() == 21) {
 
             alert("Lucky you! It's a win.");
-            settings.reset();
+            /*settings.reset();
             setText(rnd, padStart( settings.round(), 2, "0" ));
             sequence = generateSequence(settings.round());
-            computerPromises = computerTurn(sequence);
+            computerPromises = computerTurn(sequence);*/
+            resetGame();
         }
-        console.log("count after conditionals is: ", count);
     }
 
     let count = -1;

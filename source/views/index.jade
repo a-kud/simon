@@ -27,7 +27,13 @@ html
                             button.btn-circle#strict
                             label#strict-label(for="strict"): h4  STRICT
                 .flip-switch-container
-                    label.switch
-                        input(type="checkbox")
-                        .slider
+                    //- label.switch
+                    //-     input(type="checkbox")
+                    //-     .slider
+                    //- input.mobileToggle#toggle(type="checkbox" name="toggle")
+                    //- label(for="toggle")
+                    .toggle.toggle--switch
+                        input.toggle--checkbox#toggle--switch(type="checkbox")
+                        label.toggle--btn(for="toggle--switch")
+                            span.toggle--feature(data-label-on="on"  data-label-off="off")
     script(src="assets/js/main.js")
