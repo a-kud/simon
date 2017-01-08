@@ -1,9 +1,8 @@
-//"use strict";
+"use strict";
 let padStart = require('pad-start');
 
 let startBtn = document.querySelector("#start"),
     strictBtn = document.querySelector("#strict"),
-    // sw = document.querySelector(".switch"),
     sw = document.querySelector(".toggle--checkbox"),
     rnd = document.querySelector("#round");
 
@@ -157,10 +156,6 @@ function playRound(e) {
             count = -1;
             correctChoise = 0;
             if (settings.gameStatus().strict) {
-                /*settings.reset();
-                setText(rnd, padStart( settings.round(), 2, "0" ));
-                sequence = generateSequence(settings.round());
-                computerPromises = computerTurn(sequence);*/
                 resetGame();
             }
             playSound(soundUrl, btnClicked)
@@ -183,16 +178,12 @@ function playRound(e) {
             correctChoise = 0;
             sequence.push(getRandomInt(0, 4))
             computerPromises = computerTurn(sequence);
-            sleep(1500).then( () => { setRound(); /*playRound();*/ } )
+            sleep(1500).then( () => { setRound();} )
                 .then( () => { executePromisesSeq(computerPromises); } )
         }
         if (settings.round() == 21) {
 
             alert("Lucky you! It's a win.");
-            /*settings.reset();
-            setText(rnd, padStart( settings.round(), 2, "0" ));
-            sequence = generateSequence(settings.round());
-            computerPromises = computerTurn(sequence);*/
             resetGame();
         }
     }
@@ -219,16 +210,8 @@ function playRound(e) {
     }
 
     if ( !settings.gameStatus().started ) {
-        // if (e.target.id == "strict") {
-        //     settings.strict();
-        //     toggleClass(ledBox, "led-box-on");
-        // }
         computerPromises = computerTurn(sequence);
     } else {
-        // if (e.target.id != "strict") {
-        //     settings.strict();
-        //     toggleClass(ledBox, "led-box-on");
-        // }
         settings.reset();
         setText(rnd, padStart( settings.round(), 2, "0" ));
         sequence = generateSequence(settings.round());
@@ -276,12 +259,6 @@ function playSound(path, num) {
         audio.onerror = reject;
     })
 }
-//
-// function animateStrict() {
-//     let ledbox = document.querySelector(".led-box");
-//
-// }
-
 
 /**
  * @param {Number} n - Nonnegative integer
