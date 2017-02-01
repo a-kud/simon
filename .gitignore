@@ -1,8 +1,0 @@
-### Sass ###
-.sass-cache
-
-### NodeJS ###
-node_modules
-
-### Build ###
-build

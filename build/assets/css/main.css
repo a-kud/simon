@@ -1,0 +1,341 @@
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Fira Sans"), local("FiraSans-Regular"), url(http://fonts.gstatic.com/s/firasans/v5/EjsrzDkQUQCDwsBtLpcVQZBw1xU1rKptJj_0jans920.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: "Fira Sans";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Fira Sans Bold"), local("FiraSans-Bold"), url(http://fonts.gstatic.com/s/firasans/v5/DugPdSljmOTocZOR2CItOhampu5_7CjHW5spxoeN3Vs.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: "Fira Mono";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Fira Mono"), local("FiraMono"), url(http://fonts.gstatic.com/s/firamono/v3/SlRWfq1zeqXiYWAN-lnG-pBw1xU1rKptJj_0jans920.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+@font-face {
+  font-family: "The Display St";
+  src: url("../fonts/TheDisplaySt.ttf") format("opentype");
+  font-weight: normal;
+}
+body {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.red {
+  border-top: none;
+  border-right: 12px solid #111;
+  border-bottom: 12px solid #111;
+  border-left: none;
+  background: radial-gradient(circle, #FF4136 0, #FF4136 50%, #f57d76 0, #f57d76);
+}
+
+.blue {
+  border-top: none;
+  border-right: none;
+  border-bottom: 12px solid #111;
+  border-left: 12px solid #111;
+  background: radial-gradient(circle, #0074D9 0, #0074D9 50%, #58a4e6 0, #58a4e6);
+}
+
+.green {
+  border-top: 12px solid #111;
+  border-right: 12px solid #111;
+  border-bottom: none;
+  border-left: none;
+  background: radial-gradient(circle, #2ECC40 0, #2ECC40 50%, #6acc75 0, #6acc75);
+}
+
+.yellow {
+  border-top: 12px solid #111;
+  border-right: none;
+  border-bottom: none;
+  border-left: 12px solid #111;
+  background: radial-gradient(circle, #FFDC00 0, #FFDC00 50%, #fbe977 0, #fbe977);
+}
+
+.red, .blue, .green, .yellow {
+  background-size: 0.25rem 0.25rem;
+  width: 18.75rem;
+  height: 18.75rem;
+  cursor: pointer;
+}
+
+.activated-red {
+  background: #FF4136;
+}
+
+.activated-blue {
+  background: #0074D9;
+}
+
+.activated-green {
+  background: #2ECC40;
+}
+
+.activated-yellow {
+  background: #FFDC00;
+}
+
+.container, .controls-wrapper-outer, .controls-wrapper-inner, .digital-display,
+.flip-switch-container, .controls-wrapper-btns, .start-btn-wrapper,
+.strict-btn-wrapper {
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.container {
+  -ms-flex-flow: row wrap;
+      flex-flow: row wrap;
+  width: 39.75rem;
+  height: 39.75rem;
+  border-radius: 50%;
+  border: 1.125rem solid black;
+  box-shadow: 0 0 0.625rem 0.063rem rgba(0, 0, 0, 0.85), 0 0 3.125rem rgba(0, 0, 0, 0.7) inset;
+  overflow: hidden;
+  position: relative;
+}
+
+.controls-wrapper-outer {
+  -ms-flex-flow: column nowrap nowrap;
+      flex-flow: column nowrap nowrap;
+  -ms-flex-pack: center;
+      justify-content: center;
+  width: 18.75rem;
+  height: 18.75rem;
+  border: 10px solid black;
+  position: absolute;
+  left: 9.375rem;
+  top: 9.375rem;
+  z-index: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #ddd;
+  box-shadow: 0 0 3.125rem rgba(0, 0, 0, 0.7);
+}
+.controls-wrapper-outer h1 {
+  text-align: center;
+}
+
+.controls-wrapper-inner {
+  -ms-flex-flow: row nowrap;
+      flex-flow: row nowrap;
+  -ms-flex-pack: center;
+      justify-content: center;
+  padding: 0.313rem 3.125rem;
+}
+
+.lcd-wrapper {
+  -ms-flex-flow: column nowrap;
+      flex-flow: column nowrap;
+}
+.lcd-wrapper > h4 {
+  text-align: center;
+  margin: 0.313rem auto;
+}
+
+.flip-switch-container {
+  -ms-flex-pack: center;
+      justify-content: center;
+  margin-bottom: 1.2rem;
+}
+
+.controls-wrapper-btns {
+  -ms-flex-flow: row nowrap;
+      flex-flow: row nowrap;
+}
+
+.start-btn-wrapper {
+  margin-right: 1rem;
+}
+
+.start-btn-wrapper, .strict-btn-wrapper {
+  -ms-flex-flow: column nowrap;
+      flex-flow: column nowrap;
+}
+
+#start-label > h4, #strict-label > h4 {
+  margin: 0;
+  padding-top: 0.7rem;
+}
+
+.lcd {
+  width: 5rem;
+  height: 4.688rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: center;
+      justify-content: center;
+  -ms-flex-align: center;
+      align-items: center;
+  border-radius: 0.625rem;
+  border: 0.4rem solid black;
+  margin: 0.5em 1rem;
+}
+.lcd p {
+  font-size: 3em;
+  font-family: "The Display St", monospace;
+  color: #FF851B;
+  margin: 0;
+}
+
+.lcd-off {
+  background: #430710;
+}
+
+.led-box {
+  width: 1rem;
+  height: 1rem;
+  border: 0.1rem solid #fff;
+  border-radius: 50%;
+  -ms-flex-item-align: center;
+      align-self: center;
+  margin-bottom: 0.125rem;
+}
+
+@keyframes blinkYellow {
+  from {
+    background-color: #ddd;
+  }
+  to {
+    background-color: #FFDC00;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #808002 0 -1px 9px, #FF0 0 2px 0;
+  }
+}
+.led-box-on {
+  animation: blinkYellow 3s forwards;
+}
+
+.led-box-off {
+  animation: blinkYellow 3s reverse;
+}
+
+.btn-circle {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  border: 0.1rem solid #fff;
+  -ms-flex-item-align: center;
+      align-self: center;
+  box-shadow: 0 0.38em 0 #aaa;
+  transition: all 0.05s;
+}
+
+.btn-circle:active {
+  box-shadow: 0 0.25em 0 #aaa;
+  transform: translate(0, 0.2em);
+}
+
+.btn-circle:focus {
+  outline: none;
+}
+
+button {
+  outline: 0;
+}
+
+.toggle {
+  display: block;
+  text-align: center;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.toggle .toggle--checkbox {
+  display: none;
+}
+.toggle .toggle--btn {
+  display: block;
+  margin: 0 auto;
+  font-size: 1.4em;
+  transition: all 350ms ease-in;
+}
+.toggle .toggle--btn:hover {
+  cursor: pointer;
+}
+.toggle .toggle--btn, .toggle .toggle--btn:before, .toggle .toggle--btn:after, .toggle .toggle--checkbox, .toggle .toggle--checkbox:before, .toggle .toggle--checkbox:after, .toggle .toggle--feature, .toggle .toggle--feature:before, .toggle .toggle--feature:after {
+  transition: all 250ms ease-in;
+}
+.toggle .toggle--btn:before, .toggle .toggle--btn:after, .toggle .toggle--checkbox:before, .toggle .toggle--checkbox:after, .toggle .toggle--feature:before, .toggle .toggle--feature:after {
+  content: "";
+  display: block;
+}
+
+.toggle--switch .toggle--btn {
+  position: relative;
+  width: 120px;
+  height: 44px;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(90deg, #a4bf4d 0%, #a4bf4d 50%, #ca5046 50%, #ca5046 200%);
+  background-position: -80px 0;
+  background-size: 200% 100%;
+  box-shadow: inset 0 0px 22px -8px #111;
+}
+.toggle--switch .toggle--btn, .toggle--switch .toggle--btn:before {
+  border-radius: 4px;
+}
+.toggle--switch .toggle--btn:before {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 44px;
+  width: 52px;
+  border: 2px solid #202027;
+  background-image: linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.15) 100%);
+  background-color: #2b2e3a;
+  background-size: 5px 5px;
+  text-indent: -100%;
+}
+.toggle--switch .toggle--feature {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  height: 44px;
+  text-shadow: 0 1px 2px #666;
+}
+.toggle--switch .toggle--feature:before, .toggle--switch .toggle--feature:after {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.toggle--switch .toggle--feature:before {
+  content: attr(data-label-on);
+  left: -60%;
+}
+.toggle--switch .toggle--feature:after {
+  content: attr(data-label-off);
+  right: 10%;
+}
+.toggle--switch .toggle--checkbox:checked + .toggle--btn {
+  background-position: 0 0;
+}
+.toggle--switch .toggle--checkbox:checked + .toggle--btn:before {
+  left: calc(100% - 52px);
+}
+.toggle--switch .toggle--checkbox:checked + .toggle--btn .toggle--feature:before {
+  left: 20%;
+}
+.toggle--switch .toggle--checkbox:checked + .toggle--btn .toggle--feature:after {
+  right: -60%;
+}
